@@ -6,27 +6,30 @@
  */
 
 #include "Gpio.h"
+void gpioConfig(GpioReg *gpio,int pin,int mode,int outDriveType,int pullType,int speed){
+	gpio->mode &= ~(3 << (pin*2)); 				//clear pin mode to 0 first
+	gpio->mode |= mode << (pin*2); 				//set pin mode
 
-void gpioGConfig(int pin,int mode,int outDriveType,int pullType,int speed){
-	GpioG->mode &= ~(3 << (pin*2)); 				//clear pin mode to 0 first
-	GpioG->mode |= mode << (pin*2); 				//set pin mode
+	gpio->outSpeed &= ~(3 << (pin*2));			//clear pin speed to 0 first
+	gpio->outSpeed |= speed << (pin*2);			//set pin speed
 
-	GpioG->outSpeed &= ~(3 << (pin*2));			//clear pin speed to 0 first
-	GpioG->outSpeed |= speed << (pin*2);			//set pin speed
+	gpio->pullType &= ~(3 << (pin*2));				//clear pin pull-type to 0 first
+	gpio->pullType |= pullType << (pin*2);			//set pin pull-type
 
-	GpioG->pullType &= ~(3 << (pin*2));				//clear pin pull-type to 0 first
-	GpioG->pullType |= pullType << (pin*2);			//set pin pull-type
-
-	GpioG->outType &= ~(1 << pin);					//clear drive type to 0 first
-	GpioG->outType |= outDriveType << pin;			//set drive type
+	gpio->outType &= ~(1 << pin);					//clear drive type to 0 first
+	gpio->outType |= outDriveType << pin;			//set drive type
 
 }
 
-void gpioGWrite(int pin,int state){
+void gpioWrite(GpioReg *gpio,int pin,int state){
 	if(state == 1){
-		GpioG->outData |= 1<< pin;
+		gpio->outData |= 1<< pin;
 	}
 	else{
-		GpioG->outData &= ~(1 << pin);
+		gpio->outData &= ~(1 << pin);
 	}
+}
+
+int gpioRead(GpioReg *gpio,int pin){
+	return gpio->inData & (1<<pin);
 }

@@ -42,8 +42,10 @@
 #include "Rcc.h"
 
 /* USER CODE BEGIN Includes */
+#define blueButtonPin	0
 #define greenLedPin		13
 #define redLedPin		14
+
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -93,9 +95,11 @@ int main(void)
   MX_GPIO_Init();
 
   /* USER CODE BEGIN 2 */
+  enableGpioA();
   enableGpioG();
-  gpioGConfig(redLedPin,GPIO_MODE_OUT,GPIO_PUSH_PULL,GPIO_NO_PULL,GPIO_HI_SPEED);
-  gpioGConfig(greenLedPin,GPIO_MODE_OUT,GPIO_PUSH_PULL,GPIO_NO_PULL,GPIO_HI_SPEED);
+  gpioConfig(GpioA,blueButtonPin,GPIO_MODE_IN,0,GPIO_NO_PULL,0);
+  gpioConfig(GpioG,redLedPin,GPIO_MODE_OUT,GPIO_PUSH_PULL,GPIO_NO_PULL,GPIO_HI_SPEED);
+  gpioConfig(GpioG,greenLedPin,GPIO_MODE_OUT,GPIO_PUSH_PULL,GPIO_NO_PULL,GPIO_HI_SPEED);
 
   /* USER CODE END 2 */
 
@@ -104,12 +108,18 @@ int main(void)
   while (1)
   {
   /* USER CODE END WHILE */
-	  gpioGWrite(redLedPin,0);
-	  gpioGWrite(greenLedPin,1);
-	  HAL_Delay(200);
-	  gpioGWrite(redLedPin,1);
-	  gpioGWrite(greenLedPin,0);
-	  HAL_Delay(200);
+	  int volatile	blueButtonState;
+
+	  blueButtonState = gpioRead(GpioA,blueButtonPin);
+
+	  if(blueButtonState == 1){
+		  gpioWrite(GpioG,redLedPin,1);
+		  HAL_Delay(100);
+	  }else
+	  {
+		  gpioWrite(GpioG,redLedPin,0);
+		  HAL_Delay(100);
+	  }
 
   /* USER CODE BEGIN 3 */
 
